@@ -177,17 +177,12 @@ def get_fdata(fx, P1, psd_values, Fs=2000):
     :param psd_values:功率谱
     :return 返回MPF和MF
     '''
-    # get mean frequency
-    mpf_inter = integrate.cumtrapz(fx * psd_values) / integrate.cumtrapz(fx)
-    mean_mi = mpf_inter.mean()
-    mpf_index = np.where(mpf_inter > mean_mi)[0][0]
-
     mf_inter = integrate.cumtrapz(P1)  # 对能量谱进行积分，寻找能量谱的二分之一处的频率
     mf_per = mf_inter / mf_inter[-1]
     mf_index = np.where(mf_per > 0.5)[0][0]
-
-    MPF = mpf_index * Fs / len(psd_values)
-    MF = mf_index * Fs / len(psd_values)
+    
+    MPF  = integrate.trapz(fx * psd_values,fx) / integrate.trapz(psd_values,fx)
+    MF = mf_index * Fs / (2 * len(psd_values))
 
     return MPF, MF
 
